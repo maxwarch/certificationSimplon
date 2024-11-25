@@ -1,0 +1,8 @@
+{
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.autopep8",
+        // "editor.formatOnSave": false
+    },
+    "python.languageServer": "Pylance",
+    "notebook.lineNumbers": "on"
+}
