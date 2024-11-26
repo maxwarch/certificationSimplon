@@ -2,5 +2,4 @@ python-dotenv
 pandas
 pyodbc
 pyarrow
-azure-storage-blob
-azure-identity
+Pillow
