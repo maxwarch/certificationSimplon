@@ -1,9 +1,12 @@
-#!/bin/bash
+#! /bin/zsh -
 
 # https://learn.microsoft.com/en-us/rest/api/storageservices/create-user-delegation-sas
 
-source .env
+if [ -z "$RUNNING_IN_DOCKER" ] ; then
+  source .env
+fi
 
+#echo "$@"
 # options courtes : l (do_login), d (do_dryrun), p (pattern)
 # options longues : do_login, do_dryrun, pattern
 while getopts ":l:d:p:t:s:g:" opt; do
@@ -44,13 +47,14 @@ if [ -z "$pattern" ]; then
 fi
 
 shift $((OPTIND-1)) # supprimer les options des arguments positionnels
-
+echo $do_login
 if [[ "$do_login" == "true" || "$do_login" == "1" ]]; then
   echo "Connexion en cours..."
-  az login
+  #az login
+  yes | az login --use-device-code
 else
   output=$(az account show)
-  if [[ "$output" =~ "environmentName" ]]; then # Recherche approximative dans la sortie
+  if [ "$output"=~"environmentName" ]; then # Recherche approximative dans la sortie
     echo "Déjà connecté."
   else
     echo "Non connecté à Azure."
@@ -64,23 +68,25 @@ conn_string=$(az storage account show-connection-string --name $ACCOUNT_NAME --o
 # echo $conn_string
 
 if [[ "$do_dryrun" == "true" || "$do_dryrun" == "1" ]]; then
-    result=$(az storage blob download-batch \
-        --destination $destination \
-        --source $source \
-        --connection-string $conn_string \
-        --pattern "$pattern" \
-        --overwrite true \
-        --max-connections 4 \
-        --output json \
-        --dryrun)
+  print -P "%F{green}%  **** dry run  $glob **** %f"
+  result=$(az storage blob download-batch \
+      --destination $destination \
+      --source $source \
+      --connection-string $conn_string \
+      --pattern "$pattern" \
+      --overwrite true \
+      --max-connections 4 \
+      --output json \
+      --dryrun)
 else
-    az storage blob download-batch \
-        --destination $destination \
-        --source $source \
-        --connection-string $conn_string \
-        --pattern "$pattern" \
-        --overwrite true \
-        --max-connections 4 \
-        --output json \
-        > "$destination/$glob"
+  print -P "%F{green}%  **** fetch $glob **** %f"
+  az storage blob download-batch \
+      --destination $destination \
+      --source $source \
+      --connection-string $conn_string \
+      --pattern "$pattern" \
+      --overwrite true \
+      --max-connections 4 \
+      --output json \
+      > "$destination/$glob"
 fi
