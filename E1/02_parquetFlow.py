@@ -1,21 +1,58 @@
-import os
+#!/usr/bin/env python
+
+import math
+import sys
 import pyarrow.parquet as pq
+import pandas as pd
+import os
 import io
 from PIL import Image
+from tqdm import tqdm
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
-print(f'{dir_path}/data/product_eval/test-00000-of-00003.parquet')
-destination = f'{dir_path}/data/images/'
+write_img = True
+if sys.argv[1]:
+    write_img = False
 
-parquet_file = pq.ParquetFile(f'{dir_path}/data/product_eval/test-00000-of-00003.parquet')
+print("write_img", write_img)
 
-for i in parquet_file.iter_batches(2):
-    df_parquet = i.to_pandas()
-    break
+name = 'product_eval'
+base_data_path = './data/'
+csv_file = f'{base_data_path}{name}.csv'
+path_images = f'{base_data_path}images'
+json = pd.read_json(f'{base_data_path}{name}.json')
+glob = list(json.iloc[:, 0])
+batch_size = 10
 
-def convert_image(x):
-    img = dict(x['image'])
-    image = Image.open(io.BytesIO(img['bytes']))
-    image.save(f'{destination}{x['item_ID']}.jpg', 'jpeg')
+# exit()
 
-df_parquet.apply(convert_image, axis=1)
+os.makedirs(path_images, exist_ok=True)
+
+if os.path.isfile(csv_file):
+    os.remove(csv_file)
+
+
+def convert_img(row):
+    img_path = os.path.join(path_images, f"{row['item_ID']}.jpg")
+    image = Image.open(io.BytesIO(row['image']['bytes']))
+    row['image'] = img_path
+    if write_img:
+        rgb_im = image.convert('RGB')
+        rgb_im.save(img_path, 'jpeg')
+
+for parquet_file in tqdm(glob):
+    df = None
+    parquet_file = pq.ParquetFile(f'{base_data_path}{parquet_file}')
+    total = parquet_file.metadata.num_rows
+
+    for record_batch in tqdm(parquet_file.iter_batches(batch_size=batch_size, columns=['image', 'item_ID', 'title']), total=math.ceil(total / batch_size)):
+        batch = record_batch.to_pandas()
+        batch.apply(convert_img, axis=1)
+
+        if df is None:
+            df = batch
+        else:
+            df = pd.concat([df, batch])
+
+    df.to_csv(path_or_buf=csv_file, index=False, mode='a')
+
+print(f"**** SAVE CSV in {csv_file} ****")

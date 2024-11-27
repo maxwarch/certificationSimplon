@@ -7,8 +7,8 @@ if [ -z "$RUNNING_IN_DOCKER" ] ; then
 fi
 
 #echo "$@"
-# options courtes : l (do_login), d (do_dryrun), p (pattern)
-# options longues : do_login, do_dryrun, pattern
+# options courtes : l (do_login), d (do_dryrun), p (pattern), t (destination), s (source), g (glob)
+# options longues : do_login, do_dryrun, pattern, destination, source, glob
 while getopts ":l:d:p:t:s:g:" opt; do
   case $opt in
     l)
