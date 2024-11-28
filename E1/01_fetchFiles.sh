@@ -49,16 +49,16 @@ fi
 shift $((OPTIND-1)) # supprimer les options des arguments positionnels
 echo $do_login
 if [[ "$do_login" == "true" || "$do_login" == "1" ]]; then
-  echo "Connexion en cours..."
-  #az login
+  print -P "%F{green}%  Connexion en cours... %f"
   yes | az login --use-device-code
 else
   output=$(az account show)
-  if [ "$output"=~"environmentName" ]; then # Recherche approximative dans la sortie
+  if [[ ! -z "$output" && "$output"=~"environmentName" ]]; then
     echo "Déjà connecté."
   else
-    echo "Non connecté à Azure."
-    exit 1
+    print -P "%F{red}%  Non connecté à Azure. %f"
+    print -P "%F{green}%  Connexion en cours... %f"
+    yes | az login --use-device-code
   fi
 fi
 
