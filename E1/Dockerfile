@@ -42,7 +42,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 RUN pip install --no-cache-dir --prefer-binary azure-cli
 RUN az config set auto-upgrade.enable=yes
 
-RUN apt-get update && apt-get install -y wget zsh
+RUN apt-get update && apt-get install -y wget zsh unzip
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.2.1/zsh-in-docker.sh)"
 
 
@@ -50,7 +50,7 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
 # USER appuser
 
 # Copy the source code into the container.
-COPY . .
+#COPY . .
 
 # Run the application.
 ENTRYPOINT ["/bin/zsh"]
