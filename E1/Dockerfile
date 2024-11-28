@@ -42,15 +42,35 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 RUN pip install --no-cache-dir --prefer-binary azure-cli
 RUN az config set auto-upgrade.enable=yes
 
-RUN apt-get update && apt-get install -y wget zsh unzip
-RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.2.1/zsh-in-docker.sh)"
+RUN apt-get update
+RUN apt-get install -y \ 
+    curl \
+    apt-utils \
+    wget \
+    zsh \
+    unzip \
+    gnupg2 && \
+    pip install --upgrade pip
 
+# ODBC
+RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
+#RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+RUN curl https://packages.microsoft.com/config/debian/12/prod.list > /etc/apt/sources.list.d/mssql-release.list
+
+RUN exit
+RUN apt-get update
+RUN env ACCEPT_EULA=Y apt-get install -y msodbcsql18
+
+
+RUN apt-get update
+RUN apt-get install -y unixodbc
+RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.2.1/zsh-in-docker.sh)"
 
 # Switch to the non-privileged user to run the application.
 # USER appuser
 
 # Copy the source code into the container.
-#COPY . .
+COPY . .
 
 # Run the application.
 ENTRYPOINT ["/bin/zsh"]

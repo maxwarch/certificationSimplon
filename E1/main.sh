@@ -26,17 +26,16 @@ while getopts ":d:" opt; do
 done
 
 # l (do_login), d (do_dryrun), p (pattern), t (destination en local), s (source sur azure), g (glob file)
+chmod +x 01_fetchFiles.sh
 ./01_fetchFiles.sh -p "nlp_data/*.csv" -t $dest -s data -g nlp_data.json -d $do_dryrun
 ./01_fetchFiles.sh -p "machine_learning/*.zip" -t $dest -s data -g machine_learning.json -d $do_dryrun
 ./01_fetchFiles.sh -p "product_eval/*.parquet" -t $dest -s data -g product_eval.json -d $do_dryrun
 
 # ETL
 ## Process des fichiers .parquet. Création des images et d'un fichier .csv
+chmod +x 02_parquetFlow.py
 ./02_parquetFlow.py # On peut ajouter un paramètre 1 pour ne pas créer les images
 
-cd data/machine_learning && \
-  unzip -o reviews.zip amazon_review_polarity_csv.tgz && \
-  tar -xvf amazon_review_polarity_csv.tgz && \
-  rm -vf amazon_review_polarity_csv.tgz && \
-  mv reviews.zip $tmp_fullpath && \
-  cd ../..
+## Process zip file
+chmod +x 03_unzip.sh
+./03_unzip.sh
