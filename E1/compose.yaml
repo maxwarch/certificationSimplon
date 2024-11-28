@@ -6,3 +6,8 @@ services:
     volumes:
       - ./:/app
     tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: "1g"
