@@ -10,7 +10,7 @@ from PIL import Image
 from tqdm import tqdm
 
 write_img = True
-if sys.argv[1]:
+if len(sys.argv) > 1 and sys.argv[1]:
     write_img = False
 
 print("write_img", write_img)
@@ -19,6 +19,10 @@ name = 'product_eval'
 base_data_path = './data/'
 csv_file = f'{base_data_path}{name}.csv'
 path_images = f'{base_data_path}images'
+if os.path.isfile(f'{base_data_path}{name}.json') is False:
+    print('**** Pas de fichiers parquet ****')
+    exit(0)
+
 json = pd.read_json(f'{base_data_path}{name}.json')
 glob = list(json.iloc[:, 0])
 batch_size = 10
