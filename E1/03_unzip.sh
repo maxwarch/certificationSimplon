@@ -1,8 +1,10 @@
 #! /bin/zsh -
 
-cd data/machine_learning && \
-  unzip -o reviews.zip amazon_review_polarity_csv.tgz && \
-  tar -xvf amazon_review_polarity_csv.tgz && \
-  rm -vf amazon_review_polarity_csv.tgz && \
-  mv reviews.zip $tmp_fullpath && \
+tmp_fullpath=$1
+
+cd $BASE_DATA_PATH"machine_learning" && \
+  unzip -o reviews.zip && \
+  tar -xvf *.tgz && \
+  rm -vf *.tgz && \
+  mv *.zip $tmp_fullpath && \
   cd ../..
