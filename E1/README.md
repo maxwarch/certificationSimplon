@@ -7,6 +7,9 @@ When you're ready, start your application by running:
 ### Lancement du terminal Docker
 `docker exec -it e1-app-1 /bin/zsh`
 
+### Construction + démarrage
+`./start.sh`
+
 ### Arrêt
 `docker stop e1-app-1`
 
@@ -20,3 +23,9 @@ When you're ready, start your application by running:
 
 récupérer la version du système dans Docker
 `cat /etc/os-release`
+
+cron
+
+`service cron start | reload | stop`
+
+`tail -f /var/log/cron.log`

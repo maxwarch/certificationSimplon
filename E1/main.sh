@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # création des répertoires data et tmp
-dest="./data"
-tmp="./tmp"
+dest=$BASE_DATA_PATH
+tmp=$dest"tmp"
 mkdir -p $dest
 mkdir -p $tmp
 tmp_fullpath=$(readlink -f $tmp)
@@ -30,6 +30,7 @@ chmod +x 01_fetchFiles.sh
 ./01_fetchFiles.sh -p "nlp_data/*.csv" -t $dest -s data -g nlp_data.json -d $do_dryrun
 ./01_fetchFiles.sh -p "machine_learning/*.zip" -t $dest -s data -g machine_learning.json -d $do_dryrun
 ./01_fetchFiles.sh -p "product_eval/*.parquet" -t $dest -s data -g product_eval.json -d $do_dryrun
+# mv data/product_eval $tmp_fullpath
 
 # ETL
 ## Process des fichiers .parquet. Création des images et d'un fichier .csv
@@ -38,4 +39,7 @@ chmod +x 02_parquetFlow.py
 
 ## Process zip file
 chmod +x 03_unzip.sh
-./03_unzip.sh
+# ./03_unzip.sh $tmp_fullpath
+
+## Suppression des fichiers
+# rm -rf $tmp_fullpath

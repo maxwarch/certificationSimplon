@@ -49,28 +49,39 @@ RUN apt-get install -y \
     wget \
     zsh \
     unzip \
+    cron \
     gnupg2 && \
     pip install --upgrade pip
 
 # ODBC
 RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
-#RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 RUN curl https://packages.microsoft.com/config/debian/12/prod.list > /etc/apt/sources.list.d/mssql-release.list
 
 RUN exit
 RUN apt-get update
 RUN env ACCEPT_EULA=Y apt-get install -y msodbcsql18
 
-
 RUN apt-get update
 RUN apt-get install -y unixodbc
+
+# zsh
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.2.1/zsh-in-docker.sh)"
+
+# redefine path to sh
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
+# Create the log file to be able to run tail
+RUN touch /var/log/cron.log
 
 # Switch to the non-privileged user to run the application.
 # USER appuser
 
 # Copy the source code into the container.
 COPY . .
+
+# Setup cron job
+RUN cronjob=$(cat crontab)
+RUN (crontab -l ; echo "$(cat crontab) >> /var/log/cron.log") | crontab
 
 # Run the application.
 ENTRYPOINT ["/bin/zsh"]
