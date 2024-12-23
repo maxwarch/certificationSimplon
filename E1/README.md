@@ -1,14 +1,9 @@
-### Building and running your application
-
-When you're ready, start your application by running:
-
-`docker compose up -d --build`
-
-### Lancement du terminal Docker
-`docker exec -it e1-app-1 /bin/zsh`
-
 ### Construction + démarrage
 `./start.sh`
+
+A la suite du démarrage du conteneur, un terminal zsh s'ouvre depuis le conteneur.
+
+Démarrer la récupération des doc : `./main.sh`
 
 ### Arrêt
 `docker stop e1-app-1`
