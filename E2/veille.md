@@ -76,7 +76,7 @@ def categorize_event(description):
         max_tokens=64,
         n=1,
         stop=None,
-        temperature=0.5, # Ajuster la température pour contrôler la créativité
+        temperature=0.5, 
     )
     categorie = response.choices[0].text.strip()
     return categorie
@@ -86,7 +86,7 @@ def categorize_event(description):
 description = "Festival de musique avec des artistes internationaux, des stands de nourriture et des activités pour les enfants. Se déroule en plein air pendant trois jours."
 
 categorie = categorize_event(description)
-print(f"Catégorie: {categorie}") # Exemple: Festival, Musique, Famille
+print(f"Catégorie: {categorie}")
 ```
 
 Une fois le modèle créé, l'idée sera de scraper les sites web listant les évènements touristiques afin de les passer dans le modèle.
