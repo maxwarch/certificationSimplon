@@ -1,4 +1,5 @@
 """Configuration settings for the sports observatory project"""
+import os
 from pathlib import Path
 
 class Config:
@@ -9,7 +10,7 @@ class Config:
     DATA_DIR = PROJECT_ROOT / "data"
     LOGS_DIR = PROJECT_ROOT / "logs"
 
-    SECRET_KEY = "votre-clé-secrète-très-longue-et-complexe"
+    SECRET_KEY = os.getenv('SECRET_KEY')
     ALGORITHM = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES = 30
     
