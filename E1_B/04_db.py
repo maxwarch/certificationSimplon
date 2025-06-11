@@ -22,7 +22,7 @@ os.makedirs(f'{base_data_path}{name}', exist_ok=True)
 print(pyodbc.drivers())
 
 cnxn = pyodbc.connect(CONN_STR)
-cnxn.add_output_converter(-151, lambda x: str(x))
+cnxn.add_output_converter(-151, lambda x: str(x))   
 
 # cursor = cnxn.cursor()
 

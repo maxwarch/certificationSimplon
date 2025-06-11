@@ -39,7 +39,11 @@ chmod +x 02_parquetFlow.py
 
 ## Process zip file
 chmod +x 03_unzip.sh
-# ./03_unzip.sh $tmp_fullpath
+./03_unzip.sh $tmp_fullpath
+
+## Process db
+chmod +x 04_db.sh
+./04_db.sh
 
 ## Suppression des fichiers
 # rm -rf $tmp_fullpath
