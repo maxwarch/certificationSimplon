@@ -11,3 +11,4 @@ chardet==5.2.0
 python-jose[cryptography] 
 passlib[bcrypt] 
 python-multipart
+pydantic[email]

@@ -1,11 +1,8 @@
 # models.py
-from sqlalchemy import Column, Integer, String, Float, Date, DateTime
+from sqlalchemy import Boolean, Column, Integer, String, Float, Date, DateTime, func
+
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
-
-import math
-from typing import Optional
-from pydantic import BaseModel, ConfigDict, field_validator
 
 Base = declarative_base()
 
@@ -80,51 +77,18 @@ class MarketAnalysis(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-
-class TransactionResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+class User(Base):
+    __tablename__ = "users"
     
-    id: Optional[int] = None
-    date_mutation: Optional[datetime] = None
-    valeur_fonciere: Optional[float] = None
-    code_commune: Optional[str] = None
-    nom_commune: Optional[str] = None
-    type_local: Optional[str] = None
-    surface_reelle_bati: Optional[float] = None
-    nombre_pieces: Optional[int] = None
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    username = Column(String(50), unique=True, index=True, nullable=False)
+    email = Column(String(100), unique=True, index=True, nullable=True)
+    hashed_password = Column(String(255), nullable=False)
+    is_active = Column(Boolean, default=True, nullable=False)
+    is_admin = Column(Boolean, default=False, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    last_login = Column(DateTime(timezone=True), nullable=True)
     
-    # Validators pour nettoyer les valeurs float
-    @field_validator('valeur_fonciere', 'surface_reelle_bati', mode='before')
-    @classmethod
-    def clean_float_values(cls, v):
-        if v is None:
-            return None
-        if isinstance(v, (int, float)):
-            if math.isnan(v) or math.isinf(v):
-                return None
-            return float(v)
-        return v
-
-
-# Auth Modèles
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-class TokenData(BaseModel):
-    username: Optional[str] = None
-
-class UserInDB(BaseModel):
-    username: str
-    email: Optional[str] = None
-    hashed_password: str
-    is_active: bool = True
-
-class UserCreate(BaseModel):
-    username: str
-    password: str
-    email: Optional[str] = None
-
-class UserLogin(BaseModel):
-    username: str
-    password: str
+    def __repr__(self):
+        return f"<User(username='{self.username}', email='{self.email}')>"

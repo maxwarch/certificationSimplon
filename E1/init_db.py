@@ -1,5 +1,4 @@
 # init_db.py
-import os
 import sys
 from sqlalchemy import text
 from database import create_database, test_connection, engine
@@ -66,66 +65,53 @@ def create_indexes():
     except Exception as e:
         print(f"❌ Erreur lors de la création des index: {e}")
 
-
-def insert_test_data():
-    """Insertion de données de test"""
+def create_default_users():
     from database import SessionLocal
-    from models import Commune
-    from datetime import datetime
+    from crud.users_crud import UserCRUD
+    from schemas import UserCreate
 
+    """Crée les utilisateurs par défaut"""
     db = SessionLocal()
+    user_crud = UserCRUD(db)
+    
     try:
-        # Vérifier si des données existent déjà
-        existing = db.execute(text("SELECT COUNT(*) FROM communes")).scalar()
-        if existing > 0:
-            print("📋 Données de test déjà présentes, skip...")
-            return
+        # Créer l'admin par défaut
+        admin_user = UserCreate(
+            username="admin",
+            email="admin@example.com",
+            password="admin123",
+            is_admin=True
+        )
+        
+        # Créer l'utilisateur test
+        test_user = UserCreate(
+            username="user",
+            email="user@example.com", 
+            password="user123",
+            is_admin=False
+        )
 
-        # Quelques communes de test
-        test_communes = [
-            Commune(
-                code="75001",
-                nom="Paris 1er Arrondissement",
-                code_departement="75",
-                code_region="11",
-                population=16888,
-                surface=1.83,
-                longitude=2.3414,
-                latitude=48.8614
-            ),
-            Commune(
-                code="69001",
-                nom="Lyon 1er Arrondissement",
-                code_departement="69",
-                code_region="84",
-                population=29227,
-                surface=1.48,
-                longitude=4.8357,
-                latitude=45.7640
-            ),
-            Commune(
-                code="13001",
-                nom="Marseille 1er Arrondissement",
-                code_departement="13",
-                code_region="93",
-                population=39924,
-                surface=1.85,
-                longitude=5.3811,
-                latitude=43.2969
-            )
-        ]
-
-        for commune in test_communes:
-            db.merge(commune)
-
-        db.commit()
-        print("✅ Données de test insérées!")
-
+        # Créer l'utilisateur test
+        admin_user2 = UserCreate(
+            username="admin2",
+            email="admin2@example.com", 
+            password="admin123",
+            is_admin=True
+        )
+        
+        # Vérifier et créer si nécessaire
+        if not user_crud.get_user_by_username("admin"):
+            user_crud.create_user(admin_user)
+            print("✅ Utilisateur admin créé")
+        
+        user_crud.create_user(admin_user2)
+        if not user_crud.get_user_by_username("user"):
+            user_crud.create_user(test_user)
+            print("✅ Utilisateur test créé")
+            
+            
     except Exception as e:
-        print(f"❌ Erreur insertion données test: {e}")
-        db.rollback()
-    finally:
-        db.close()
+        print(f"❌ Erreur lors de la création des utilisateurs : {e}")
 
 
 def check_tables():
@@ -156,4 +142,5 @@ def check_tables():
 
 if __name__ == "__main__":
     init_database()
+    create_default_users()
     check_tables()

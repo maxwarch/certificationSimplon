@@ -2,8 +2,7 @@
 import os
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from models import Base, DVFTransaction, Commune, MarketAnalysis
+from models import Base
 
 # Configuration de la base de données
 DATABASE_URL = os.getenv(

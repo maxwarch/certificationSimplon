@@ -1,10 +1,10 @@
 from typing import Optional
 from sqlalchemy.orm import Session
 from database import get_db
-from config import Config
-from auth import get_current_user
+from utils.auth import get_current_user
 
-from models import MarketAnalysis, UserInDB
+from models import MarketAnalysis
+from schemas import UserResponse
 from fastapi import APIRouter, Depends, HTTPException
 
 
@@ -21,7 +21,7 @@ async def get_market_analysis(
     period_start: Optional[str] = None,
     period_end: Optional[str] = None,
     db: Session = Depends(get_db),
-    current_user: UserInDB = Depends(get_current_user)
+    current_user: UserResponse = Depends(get_current_user)
 ):
     """Analyse du marché pour une commune"""
 

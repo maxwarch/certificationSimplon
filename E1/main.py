@@ -2,22 +2,20 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from auth import get_current_user
-from config import Config
+from utils.auth import get_current_user
 from database import get_db
 from data_processor import DataProcessor
 from utils.logger import get_logger
 
-from models import (
-    UserInDB
-)
+from schemas import UserResponse
 
 from routers import (
     auth_router,
     transactions_router,
     communes_router,
     market_router,
-    stats_router
+    stats_router,
+    users_router
 )
 
 logger = get_logger(__name__)
@@ -38,6 +36,7 @@ app.include_router(transactions_router)
 app.include_router(communes_router)
 app.include_router(market_router)
 app.include_router(stats_router)
+app.include_router(users_router)
 
 
 @app.get("/")
@@ -46,7 +45,7 @@ async def root():
 
 
 @app.post("/data/refresh")
-async def refresh_data(db: Session = Depends(get_db), current_user: UserInDB = Depends(get_current_user)):
+async def refresh_data(db: Session = Depends(get_db), current_user: UserResponse = Depends(get_current_user)):
     """Rafraîchit les données"""
     count = None
     try:

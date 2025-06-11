@@ -4,8 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 import sqlalchemy
 from database import get_db
-from models import DVFTransaction, TransactionResponse, UserInDB
-from auth import get_current_user
+from models import DVFTransaction
+from schemas import TransactionResponse, UserResponse
+from utils.auth import get_current_user
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -27,7 +28,7 @@ async def get_transactions(
     max_price: Optional[float] = None,
     limit: int = Query(100, le=1000),
     db: Session = Depends(get_db),
-    current_user: UserInDB = Depends(get_current_user)
+    current_user: UserResponse = Depends(get_current_user)
 ) -> List[TransactionResponse]:
     """Récupère les transactions"""
     
@@ -75,7 +76,7 @@ async def get_investment_opportunities(
     type_local: str = "Appartement",
     rentabilite_min: float = 4.0,
     db: Session = Depends(get_db),
-    current_user: UserInDB = Depends(get_current_user)
+    current_user: UserResponse = Depends(get_current_user)
 ):
     """Opportunités d'investissement"""
 

@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 import sqlalchemy
 from database import get_db
-from models import UserInDB
-from auth import get_current_user
+from schemas import UserResponse
+from utils.auth import get_current_user
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -11,7 +11,7 @@ logger = get_logger(__name__)
 router = APIRouter(
     prefix="/statistics",
     tags=["Statistics"],
-    dependencies=[Depends(get_current_user)],  # Protection globale du router
+    dependencies=[Depends(get_current_user)],
     responses={404: {"description": "Not found"}},
 )
 
@@ -19,7 +19,7 @@ router = APIRouter(
 async def get_department_statistics(
     code_departement: str,
     db: Session = Depends(get_db),
-    current_user: UserInDB = Depends(get_current_user)
+    current_user: UserResponse = Depends(get_current_user)
 ):
     """Statistiques par département"""
 
