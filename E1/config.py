@@ -8,7 +8,7 @@ class Config:
     # Project paths
     PROJECT_ROOT = Path(__file__).parent
     DATA_DIR = PROJECT_ROOT / "data"
-    LOGS_DIR = PROJECT_ROOT / "logs"
+    LOGS_DIR = Path("/var/log/api")
 
     SECRET_KEY = os.getenv('SECRET_KEY')
     ALGORITHM = "HS256"

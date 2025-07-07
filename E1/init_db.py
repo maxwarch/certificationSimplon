@@ -25,10 +25,6 @@ def init_database():
     print("\n3. Création des index...")
     create_indexes()
 
-    # 4. Insertion de données de test (optionnel)
-    # print("\n4. Données de test...")
-    # insert_test_data()
-
     print("\n✅ Initialisation terminée!")
 
 

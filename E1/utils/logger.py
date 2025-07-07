@@ -34,6 +34,13 @@ def setup_logger(name: str, level: int = logging.INFO) -> logging.Logger:
     
     # File handler
     log_file = Config.LOGS_DIR / f"{name}_{datetime.now().strftime('%Y%m%d')}.log"
+
+    # Créer le répertoire parent s'il n'existe pas
+    log_file.parent.mkdir(parents=True, exist_ok=True)
+
+    # Créer le fichier s'il n'existe pas
+    log_file.touch(exist_ok=True)
+
     file_handler = logging.FileHandler(log_file, encoding='utf-8')
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(detailed_formatter)

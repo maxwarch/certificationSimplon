@@ -1,9 +1,10 @@
 # main.py
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 from utils.auth import get_current_user
-from database import get_db
+from database import get_db, test_connection
 from data_processor import DataProcessor
 from utils.logger import get_logger
 
@@ -45,7 +46,7 @@ async def root():
 
 
 @app.post("/data/refresh")
-async def refresh_data(db: Session = Depends(get_db), current_user: UserResponse = Depends(get_current_user)):
+async def refresh_data(db: Session = Depends(get_db)):
     """Rafraîchit les données"""
     count = None
     try:
@@ -69,9 +70,24 @@ async def refresh_data(db: Session = Depends(get_db), current_user: UserResponse
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-# @app.on_event("startup")
-# async def startup_event():
-#     # Appeler directement la fonction sans passer par HTTP
-#     db = next(get_db())
-#     await refresh_data(db)
+@app.get("/health")
+async def health_check():
+    """Endpoint de vérification de santé"""
+    try:
+        test_connection()
+        
+        return {
+            "status": "healthy",
+            "service": "immobilier_api",
+            "database": "connected"
+        }
+    except Exception as e:
+        logger.error(f"Connexion impossible à la bdd: {e}")
+        raise HTTPException(
+            status_code=503, 
+            detail={
+                "status": "unhealthy",
+                "service": "immobilier_api",
+                "error": str(e)
+            }
+        )

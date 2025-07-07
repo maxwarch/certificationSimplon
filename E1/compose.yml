@@ -1,44 +1,49 @@
-# docker-compose.yml
-version: '3.8'
-
 services:
   postgres:
     image: postgres:15-alpine
     container_name: immobilier_db
     environment:
-      POSTGRES_DB: immobilier_db
-      POSTGRES_USER: immobilier_user
-      POSTGRES_PASSWORD: immobilier_pass
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - ./data/postgres_data:/var/lib/postgresql/data
       - ./init-sql:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U immobilier_user -d immobilier_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 120s
 
   api:
     build: .
     container_name: immobilier_api
-    environment:
-      - DATABASE_URL=postgresql://immobilier_user:immobilier_pass@postgres:5432/immobilier_db
     ports:
       - "8000:8000"
     depends_on:
       postgres:
         condition: service_healthy
     env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     volumes:
       - ./data:/app/data
+      - ./logs:/var/log/api
       - ./:/app
     command: >
       sh -c "
         python init_db.py &&
         uvicorn main:app --host 0.0.0.0 --port 8000 --reload
       "
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
 volumes:
-  postgres_data:
+  postgres_data: {}

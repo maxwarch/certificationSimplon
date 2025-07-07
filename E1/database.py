@@ -5,11 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from models import Base
 
 # Configuration de la base de données
-DATABASE_URL = os.getenv(
-    "DATABASE_URL", "postgresql://immobilier_user:immobilier_pass@localhost:5432/immobilier_db")
-
-# Création de l'engine
-engine = create_engine(DATABASE_URL)
+engine = create_engine(os.getenv("DATABASE_URL"))
 
 # Session pour les requêtes
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -52,18 +48,19 @@ def test_connection():
         with engine.connect() as connection:
             result = connection.execute(text("SELECT 1"))
             result.fetchone()
-        print("✅ Connexion à la base de données réussie!")
+        #print("✅ Connexion à la base de données réussie!")
         return True
     except Exception as e:
-        print(f"❌ Erreur de connexion: {e}")
-        return False
+        raise e
 
 
 if __name__ == "__main__":
     print("Configuration de la base de données...")
 
     # Test de connexion
-    if test_connection():
+    try:
+        test_connection()
+
         # Création des tables
         create_database()
 
@@ -72,5 +69,5 @@ if __name__ == "__main__":
         inspector = inspect(engine)
         tables = inspector.get_table_names()
         print(f"📋 Tables créées: {tables}")
-    else:
-        print("Impossible de se connecter à la base de données")
+    except Exception as e:
+        print(f"❌ Erreur de connexion à la bdd: {e}")
