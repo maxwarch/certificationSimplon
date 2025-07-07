@@ -19,7 +19,9 @@ services:
       start_period: 120s
 
   api:
-    build: .
+    build:
+      dockerfile: docker/cron.dockerfile
+      context: .
     container_name: immobilier_api
     ports:
       - "8000:8000"
@@ -44,6 +46,22 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+  cron:
+    container_name: cron
+    build:
+      dockerfile: docker/cron.dockerfile
+      context: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/var/log/
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   postgres_data: {}

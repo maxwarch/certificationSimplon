@@ -48,9 +48,9 @@ def detect_encoding(file_path):
 
 def load_csv_safe(file_path, chunksize=10000, **kwargs):
     """Charge un CSV en détectant automatiquement l'encodage"""
-    file_path = download_file(file_path, './data/dvf.zip')
-    unzip_and_rename(file_path, 'dvf.txt', './data')
-    file_path = './data/dvf.txt'
+    file_path = download_file(file_path, '/app/data/dvf.zip')
+    unzip_and_rename(file_path, 'dvf.txt', '/app/data')
+    file_path = '/app/data/dvf.txt'
     encoding = detect_encoding(file_path)
 
     if chunksize:

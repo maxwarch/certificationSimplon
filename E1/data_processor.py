@@ -4,7 +4,6 @@ import requests
 from sqlalchemy.orm import Session
 from utils.data_loader import load_dvf_data_streaming
 from models import DVFTransaction, Commune, MarketAnalysis
-import logging
 from typing import Optional
 import numpy as np
 from utils.logger import get_logger
@@ -16,8 +15,11 @@ class DataProcessor:
     def __init__(self, db_session: Session):
         self.db = db_session
 
-    def download_and_process_dvf_data(self, year: int = 2023):
+    def download_and_process_dvf_data(self, year: int = 2023, logger_cron = None):
         """Télécharge et traite les données DVF"""
+        if not logger_cron:
+            logger_cron = logger
+
         try:
             # URL des données DVF
             url = "https://www.data.gouv.fr/fr/datasets/r/5ffa8553-0e8f-4622-add9-5c0b593ca1f8"
@@ -32,8 +34,7 @@ class DataProcessor:
                 # Sauvegarde en base
                 self._save_dvf_data(df)
 
-                logger.info(
-                    f"Traitement en cours: {len(df)} transactions")
+                logger_cron.info(f"Traitement en cours: {len(df)} transactions")
                 count = count + 1
                 lendf = len(df) + lendf
 
@@ -43,7 +44,7 @@ class DataProcessor:
             return lendf
 
         except Exception as e:
-            logger.error(f"Erreur lors du traitement DVF: {e}")
+            logger_cron.error(f"Erreur lors du traitement DVF: {e}")
             raise
 
     def _clean_dvf_data(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -96,8 +97,11 @@ class DataProcessor:
 
         self.db.commit()
 
-    def fetch_communes_data(self):
+    def fetch_communes_data(self, logger_cron = None):
         """Récupère les données des communes depuis l'API Géo"""
+        if not logger_cron:
+            logger_cron = logger
+
         try:
             url = "https://geo.api.gouv.fr/communes"
             params = {
@@ -126,16 +130,17 @@ class DataProcessor:
                 self.db.merge(commune)
 
             self.db.commit()
-            logger.info(
-                f"Données de {len(communes_data)} communes récupérées")
+            logger_cron.info(f"Données de {len(communes_data)} communes récupérées")
 
         except Exception as e:
-            logger.error(
-                f"Erreur lors de la récupération des communes: {e}")
+            logger_cron.error(f"Erreur lors de la récupération des communes: {e}")
             raise
 
-    def generate_market_analysis(self, code_commune: Optional[str] = None):
+    def generate_market_analysis(self, code_commune: Optional[str] = None, logger_cron = None):
         """Génère l'analyse du marché"""
+        if not logger_cron:
+            logger_cron = logger
+
         try:
             query = self.db.query(DVFTransaction).filter(
                 DVFTransaction.valeur_fonciere.isnot(None),
@@ -189,8 +194,8 @@ class DataProcessor:
                 self.db.add(analysis)
 
             self.db.commit()
-            logger.info("Analyse du marché générée")
+            logger_cron.info("Analyse du marché générée")
 
         except Exception as e:
-            logger.error(f"Erreur lors de l'analyse: {e}")
+            logger_cron.error(f"Erreur lors de l'analyse: {e}")
             raise

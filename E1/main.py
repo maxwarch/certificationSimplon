@@ -44,32 +44,6 @@ app.include_router(users_router)
 async def root():
     return {"message": "Plateforme d'analyse immobilière"}
 
-
-@app.post("/data/refresh")
-async def refresh_data(db: Session = Depends(get_db)):
-    """Rafraîchit les données"""
-    count = None
-    try:
-        processor = DataProcessor(db)
-
-        # Récupération des communes
-        processor.fetch_communes_data()
-
-        # Traitement des données DVF
-        count = processor.download_and_process_dvf_data()
-
-        # Génération des analyses
-        processor.generate_market_analysis()
-
-        return {
-            'status': 'success',
-            'transactions_processed': count,
-            'message': 'Données rafraîchies avec succès'
-        }
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
 @app.get("/health")
 async def health_check():
     """Endpoint de vérification de santé"""
