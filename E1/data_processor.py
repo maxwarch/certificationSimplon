@@ -52,7 +52,6 @@ class DataProcessor:
 
         # Suppression des valeurs aberrantes
         df = df.dropna(subset=['Valeur fonciere'])
-        df = df[df['Valeur fonciere'] > 0]
 
         # Calcul du prix au m²
         df['Prix_m2'] = df['Valeur fonciere'] / \

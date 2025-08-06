@@ -1,14 +1,9 @@
 # main.py
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import text
-from sqlalchemy.orm import Session
-from utils.auth import get_current_user
-from database import get_db, test_connection
-from data_processor import DataProcessor
+from database import test_connection
 from utils.logger import get_logger
-
-from schemas import UserResponse
 
 from routers import (
     auth_router,
@@ -43,6 +38,13 @@ app.include_router(users_router)
 @app.get("/")
 async def root():
     return {"message": "Plateforme d'analyse immobilière"}
+
+@app.exception_handler(ValueError)
+async def value_error_handler(request: Request, exc: ValueError):
+    return JSONResponse(
+        status_code=400,
+        content={"message": f"Erreur de validation: {str(exc)}"}
+    )
 
 @app.get("/health")
 async def health_check():

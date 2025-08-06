@@ -59,23 +59,6 @@ def load_csv_safe(file_path, chunksize=10000, **kwargs):
     return pd.read_csv(file_path, encoding=encoding, **kwargs)
 
 
-def load_dvf_data(file_path, chunksize=10000):
-    """Charge les données DVF avec gestion d'encodage"""
-    try:
-        logger.info(f"📂 Chargement de {file_path}")
-
-        # Chargement avec gestion d'encodage
-        df = load_csv_safe(file_path, sep='|',
-                           chunksize=chunksize, low_memory=False)
-
-        logger.info(f"✅ {len(df)} lignes chargées")
-        return df
-
-    except Exception as e:
-        logger.error(f"❌ Erreur lors du chargement: {e}")
-        return None
-
-
 def load_dvf_data_streaming(file_path, chunksize=10000):
     """Traite les données DVF en streaming"""
     chunks = load_csv_safe(file_path, chunksize=chunksize,
