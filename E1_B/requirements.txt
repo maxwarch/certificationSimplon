@@ -1,6 +1,0 @@
-python-dotenv
-pandas
-pyodbc
-pyarrow
-Pillow
-tqdm
