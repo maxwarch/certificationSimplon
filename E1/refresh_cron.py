@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import pandas as pd
+from utils.data_loader import detect_encoding, load_dvf_data_streaming
 from data_processor import DataProcessor
 from database import get_db
 from utils.logger import get_logger
@@ -19,7 +21,7 @@ try:
     count = processor.download_and_process_dvf_data(logger_cron=logger)
 
     # Génération des analyses
-    processor.generate_market_analysis(logger_cron=logger)
+    #processor.generate_market_analysis(code_commune="350", logger_cron=logger)
 
 except Exception as e:
     logger.error(f"{'='*10} Erreur {'='*10}")

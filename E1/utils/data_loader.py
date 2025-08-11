@@ -52,20 +52,39 @@ def load_csv_safe(file_path, chunksize=10000, **kwargs):
     unzip_and_rename(file_path, 'dvf.txt', '/app/data')
     file_path = '/app/data/dvf.txt'
     encoding = detect_encoding(file_path)
-
+    
     if chunksize:
-        return pd.read_csv(file_path, encoding=encoding, chunksize=chunksize, **kwargs)
+        return pd.read_csv(file_path, encoding=encoding, chunksize=chunksize, iterator=True, converters={
+            'Nature culture': str,
+            'Nature culture speciale': str,
+            'Type de voie': str,
+            'Code postal': str,
+            '1er lot': str,
+            '2eme lot': str,
+            '3eme lot': str,
+            '4eme lot': str,
+            'Section': str,
+            'Voie': str,
+            'Commune': str,
+            'B/T/Q': str
+        }, **kwargs)
 
     return pd.read_csv(file_path, encoding=encoding, **kwargs)
 
 
 def load_dvf_data_streaming(file_path, chunksize=10000):
     """Traite les données DVF en streaming"""
-    chunks = load_csv_safe(file_path, chunksize=chunksize,
-                           sep='|', decimal=',', date_format='%d/%m/%Y', low_memory=False)
+    try:
+        chunks = load_csv_safe(file_path, chunksize=chunksize,
+                            sep='|', decimal=',', date_format='%d/%m/%Y', low_memory=False)
 
-    for i, chunk in enumerate(chunks):
-        yield chunk
+        for i, chunk in enumerate(chunks):
+            yield chunk
+    except StopIteration:
+        print("Fin du fichier atteinte")
+    except Exception as e:
+        print(f"Erreur load_dvf_data_streaming: {e}")
+        raise
 
 def load_communes_data(file_path):
     """Charge les données des communes avec gestion d'encodage"""

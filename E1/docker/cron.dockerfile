@@ -10,13 +10,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends cron \
 # Copier les fichiers nécessaires
 RUN ln -s /usr/local/bin/python /usr/bin/python
 
-COPY . .
+#COPY . .
 COPY crontab /etc/cron.d/cronjob
 COPY docker/cron-entrypoint.sh /tmp/cron-entrypoint.sh
 
 # Installation des dépendances Python
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install --no-cache-dir -r requirements.txt
+    --mount=type=bind,source=requirements-cron.txt,target=requirements.txt \
+    python -m pip install --no-cache-dir -r requirements.txt
 
 # Configuration de cron
 RUN chmod 0644 /etc/cron.d/cronjob \

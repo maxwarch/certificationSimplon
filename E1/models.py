@@ -2,7 +2,6 @@
 from sqlalchemy import Boolean, Column, Integer, String, Float, Date, DateTime, func
 
 from sqlalchemy.ext.declarative import declarative_base
-from datetime import datetime
 
 Base = declarative_base()
 
@@ -11,21 +10,31 @@ class DVFTransaction(Base):
     __tablename__ = 'dvf_transactions'
 
     id = Column(Integer, primary_key=True, index=True)
+    identifiant_document = Column(String(50))
+    reference_document = Column(String(50))
+    article_cgi_1 = Column(String(20))
+    article_cgi_2 = Column(String(20))
+    article_cgi_3 = Column(String(20))
+    article_cgi_4 = Column(String(20))
+    article_cgi_5 = Column(String(20))
+    no_disposition = Column(String(20))
     date_mutation = Column(Date)
-    nature_mutation = Column(String(50))
+    nature_mutation = Column(String(100))
     valeur_fonciere = Column(Float)
-    adresse_numero = Column(String(10))
-    adresse_suffixe = Column(String(10))
-    adresse_nom_voie = Column(String(255))
-    adresse_code_voie = Column(String(10))
-    code_postal = Column(String(50))
-    code_commune = Column(String(50))
-    nom_commune = Column(String(100))
-    code_departement = Column(String(30))
-    ancien_code_commune = Column(String(50))
-    ancien_nom_commune = Column(String(100))
-    ancien_id_parcelle = Column(String(50))
-    numero_volume = Column(String(10))
+    prix_m2 = Column(Float)
+    no_voie = Column(String(10))
+    btq = Column(String(10))  # B/T/Q
+    type_de_voie = Column(String(50))
+    code_voie = Column(String(10))
+    voie = Column(String(255))
+    code_postal = Column(String(5))
+    commune = Column(String(100))
+    code_departement = Column(String(3))
+    code_commune = Column(String(5))
+    prefixe_de_section = Column(String(5))
+    section = Column(String(5))
+    no_plan = Column(String(10))
+    no_volume = Column(String(10))
     lot1_numero = Column(String(10))
     lot1_surface_carrez = Column(Float)
     lot2_numero = Column(String(10))
@@ -37,14 +46,17 @@ class DVFTransaction(Base):
     lot5_numero = Column(String(10))
     lot5_surface_carrez = Column(Float)
     nombre_lots = Column(Integer)
+    code_type_local = Column(String(10))
     type_local = Column(String(50))
+    identifiant_local = Column(String(50))
     surface_reelle_bati = Column(Float)
     nombre_pieces_principales = Column(Integer)
+    nature_culture = Column(String(50))
+    nature_culture_speciale = Column(String(50))
     surface_terrain = Column(Float)
     longitude = Column(Float)
     latitude = Column(Float)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
+    created_at = Column(DateTime, default=func.now())
 
 class Commune(Base):
     __tablename__ = 'communes'
@@ -57,7 +69,7 @@ class Commune(Base):
     surface = Column(Float)
     longitude = Column(Float)
     latitude = Column(Float)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=func.now())
 
 
 class MarketAnalysis(Base):
@@ -74,7 +86,7 @@ class MarketAnalysis(Base):
     transaction_count = Column(Integer)
     total_volume = Column(Float)
     price_evolution = Column(Float)  # % par rapport à la période précédente
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=func.now())
 
 
 class User(Base):

@@ -59,6 +59,7 @@ services:
     volumes:
       - ./data:/app/data
       - ./logs:/var/log/
+      - ./:/app
     restart: always
     depends_on:
       postgres:

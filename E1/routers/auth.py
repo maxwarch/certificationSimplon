@@ -83,43 +83,52 @@ async def refresh_token(current_user = Depends(get_current_user)):
 
 
 @router.post("/register", response_model=dict)
-async def register_user(user: UserCreate, db: Session = Depends(get_db)):
+async def register_user(user: UserCreate, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     """Inscription utilisateur"""
     user_crud = UserCRUD(db)
+
+    if current_user.is_admin:
     
-    # Vérifier si l'utilisateur existe déjà
-    if user_crud.get_user_by_username(user.username):
+        # Vérifier si l'utilisateur existe déjà
+        if user_crud.get_user_by_username(user.username):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Un utilisateur avec ce nom d'utilisateur existe déjà"
+            )
+        
+        if user.email and user_crud.get_user_by_email(user.email):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Un utilisateur avec cet email existe déjà"
+            )
+        
+        # Créer l'utilisateur
+        try:
+            new_user = user_crud.create_user(user)
+            return {
+                "message": "Utilisateur créé avec succès",
+                "username": new_user.username,
+                "email": new_user.email,
+                "is_admin": False,
+                "is_active": True
+            }
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Erreur lors de la création de l'utilisateur: {str(e)}"
+            )
+    else:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Un utilisateur avec ce nom d'utilisateur existe déjà"
-        )
-    
-    if user.email and user_crud.get_user_by_email(user.email):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Un utilisateur avec cet email existe déjà"
-        )
-    
-    # Créer l'utilisateur
-    try:
-        new_user = user_crud.create_user(user)
-        return {
-            "message": "Utilisateur créé avec succès",
-            "username": new_user.username,
-            "email": new_user.email
-        }
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Erreur lors de la création de l'utilisateur: {str(e)}"
-        )
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"Vous devez être adminstrateur pour créer un utilisateur"
+            )
 
 
 @router.post("/logout", response_model=dict)
 async def logout(current_user = Depends(get_current_user)):
     """Déconnexion utilisateur (optionnel - côté client)"""
     return {
-        "message": "Déconnexion réussie. Supprimez le token côté client.",
+        "message": "Supprimez le token côté client.",
         "username": current_user.username
     }
 
