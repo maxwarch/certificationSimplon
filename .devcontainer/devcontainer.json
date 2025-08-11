@@ -19,7 +19,8 @@
     }
   },
   "remoteUser": "root",
-  "updateContentCommand": "[ -f packages.txt ] && sudo apt update && sudo apt upgrade && sudo xargs apt install -y <packages.txt; pip3 install --user -r requirements.txt",
+  "updateContentCommand": "[ -f packages.txt ] && sudo apt update && sudo apt upgrade && sudo xargs apt install -y <packages.txt; pip3 install --upgrade pip setuptools wheel && pip3 install --user -r E1/requirements.txt",
+  "postCreateCommand": "code --install-extension ms-python.python --force",
   "forwardPorts": [
     8501
   ],
