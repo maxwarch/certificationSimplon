@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import pandas as pd
-from utils.data_loader import detect_encoding, load_dvf_data_streaming
 from data_processor import DataProcessor
 from database import get_db
 from utils.logger import get_logger
