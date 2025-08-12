@@ -77,6 +77,7 @@ class MarketAnalysis(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     code_commune = Column(String(5))
+    code_departement = Column(String(5))
     period = Column(String(20))  # YYYY-MM
     type_local = Column(String(50))
     avg_price_m2 = Column(Float)

@@ -105,7 +105,7 @@ async def get_investment_opportunities(
                 HAVING COUNT(*) >= 5
             )
             SELECT 
-                c.nom ,
+                c.nom,
                 round(cs.prix_m2_moyen::numeric, 2) as prix_m2_moyen,
                 cs.nb_transactions,
                 round(cs.prix_median::numeric, 2) as prix_median,

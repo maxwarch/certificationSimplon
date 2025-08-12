@@ -315,7 +315,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8000/transactions/investment-opportunities?budget_max=95000",
+					"raw": "localhost:8000/transactions/investment-opportunities?budget_max=95000&prix_m2_max=1000",
 					"host": [
 						"localhost"
 					],
@@ -333,6 +333,10 @@
 							"key": "type_local",
 							"value": "Maison",
 							"disabled": true
+						},
+						{
+							"key": "prix_m2_max",
+							"value": "1000"
 						}
 					]
 				}
@@ -377,6 +381,9 @@
 		},
 		{
 			"name": "market analysis",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -390,20 +397,57 @@
 				},
 				"method": "GET",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"code_commune\": \"350\",\n  \"code_departement\": \"59\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "localhost:8000/market/analysis/:commune",
+					"raw": "localhost:8000/market/analysis",
 					"host": [
 						"localhost"
 					],
 					"port": "8000",
 					"path": [
 						"market",
-						"analysis",
-						":commune"
-					],
-					"variable": [
+						"analysis"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "market genrate",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "commune",
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/market/generate?code_commune=350",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"market",
+						"generate"
+					],
+					"query": [
+						{
+							"key": "code_commune",
 							"value": "350"
 						}
 					]

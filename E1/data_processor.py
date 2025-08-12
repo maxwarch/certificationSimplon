@@ -191,6 +191,7 @@ class DataProcessor:
             for transaction in transactions:
                 key = (
                     transaction.code_commune,
+                    transaction.code_departement,
                     transaction.date_mutation.strftime('%Y-%m'),
                     transaction.type_local
                 )
@@ -206,12 +207,13 @@ class DataProcessor:
 
             # Calcul des statistiques
             for key, data in analysis_data.items():
-                code_commune, period, type_local = key
+                code_commune, code_departement, period, type_local = key
                 prix_m2_list = [d['prix_m2'] for d in data]
                 valeurs_list = [d['valeur_fonciere'] for d in data]
 
                 analysis = MarketAnalysis(
                     code_commune=code_commune,
+                    code_departement=code_departement,
                     period=period,
                     type_local=type_local,
                     avg_price_m2=np.mean(prix_m2_list),

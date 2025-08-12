@@ -93,3 +93,11 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: Optional[str] = None
+
+
+class MaketAnalysis(BaseModel):
+    code_commune: str
+    code_departement: Optional[str] = None
+    type_local: Optional[str] = None
+    period_start: Optional[str] = None
+    period_end: Optional[str] = None
