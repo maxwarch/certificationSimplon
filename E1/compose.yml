@@ -21,7 +21,7 @@ services:
 
   api:
     build:
-      dockerfile: docker/cron.dockerfile
+      dockerfile: docker/api.dockerfile
       context: .
     container_name: immobilier_api
     ports:
